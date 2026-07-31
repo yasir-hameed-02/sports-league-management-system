@@ -1,0 +1,475 @@
+// ============================================================
+// SPORTS LEAGUE — Module Schema Definitions (20 modules)
+// ============================================================
+import { FieldDef } from './store';
+
+export interface ModuleDef {
+  key: string;          // table key
+  label: string;        // display name
+  icon: string;         // emoji icon (unique per module)
+  singular: string;     // singular name for modals
+  fields: FieldDef[];
+  columns: { key: string; label: string; width?: string }[];
+}
+
+// Helper to generate options from DB rows
+function optsFromTable(rows: any[], idKey = 'id', labelKey = 'name') {
+  return rows.map(r => ({ value: r[idKey], label: r[labelKey] }));
+}
+
+export function buildModules(db: any): ModuleDef[] {
+  return [
+    {
+      key: 'coaches', label: 'Coaches', singular: 'Coach', icon: '🧢',
+      fields: [
+        { name: 'name', label: 'Name', type: 'text', required: true, lettersOnly: true, minLength: 2, duplicateCheck: true },
+        { name: 'email', label: 'Email', type: 'text', required: true, email: true },
+        { name: 'phone', label: 'Phone', type: 'text', required: true },
+        { name: 'specialty', label: 'Specialty', type: 'text', required: true },
+        { name: 'experience_years', label: 'Experience (Years)', type: 'number', required: true, min: 0, max: 60 },
+      ],
+      columns: [
+        { key: 'id', label: 'ID', width: '60px' },
+        { key: 'name', label: 'Name' },
+        { key: 'email', label: 'Email' },
+        { key: 'phone', label: 'Phone' },
+        { key: 'specialty', label: 'Specialty' },
+        { key: 'experience_years', label: 'Years' },
+      ],
+    },
+    {
+      key: 'teams', label: 'Teams', singular: 'Team', icon: '⚽',
+      fields: [
+        { name: 'name', label: 'Team Name', type: 'text', required: true, minLength: 2, duplicateCheck: true },
+        { name: 'coach_id', label: 'Head Coach', type: 'select', required: true, options: optsFromTable(db.coaches) },
+        { name: 'founded_year', label: 'Founded Year', type: 'number', required: true, min: 1800, max: 2100 },
+        { name: 'home_city', label: 'Home City', type: 'text', required: true },
+        { name: 'logo_url', label: 'Logo URL', type: 'text' },
+      ],
+      columns: [
+        { key: 'id', label: 'ID', width: '60px' },
+        { key: 'name', label: 'Name' },
+        { key: 'coach_id', label: 'Coach' },
+        { key: 'founded_year', label: 'Founded' },
+        { key: 'home_city', label: 'City' },
+      ],
+    },
+    {
+      key: 'players', label: 'Players', singular: 'Player', icon: '🏃',
+      fields: [
+        { name: 'name', label: 'Name', type: 'text', required: true, lettersOnly: true, minLength: 2 },
+        { name: 'team_id', label: 'Team', type: 'select', required: true, options: optsFromTable(db.teams) },
+        { name: 'position', label: 'Position', type: 'select', required: true, options: [
+          { value: 'Goalkeeper', label: 'Goalkeeper' },
+          { value: 'Defender', label: 'Defender' },
+          { value: 'Midfielder', label: 'Midfielder' },
+          { value: 'Forward', label: 'Forward' },
+        ]},
+        { name: 'age', label: 'Age', type: 'number', required: true, min: 15, max: 50 },
+        { name: 'jersey_number', label: 'Jersey #', type: 'number', required: true, min: 1, max: 99 },
+      ],
+      columns: [
+        { key: 'id', label: 'ID', width: '60px' },
+        { key: 'name', label: 'Name' },
+        { key: 'team_id', label: 'Team' },
+        { key: 'position', label: 'Position' },
+        { key: 'age', label: 'Age' },
+        { key: 'jersey_number', label: '#' },
+      ],
+    },
+    {
+      key: 'venues', label: 'Venues', singular: 'Venue', icon: '🏟️',
+      fields: [
+        { name: 'name', label: 'Venue Name', type: 'text', required: true, minLength: 2, duplicateCheck: true },
+        { name: 'address', label: 'Address', type: 'text', required: true },
+        { name: 'capacity', label: 'Capacity', type: 'number', required: true, min: 100, max: 200000 },
+        { name: 'surface_type', label: 'Surface Type', type: 'select', required: true, options: [
+          { value: 'Grass', label: 'Grass' },
+          { value: 'Turf', label: 'Turf' },
+          { value: 'Hybrid', label: 'Hybrid' },
+          { value: 'Artificial', label: 'Artificial' },
+        ]},
+      ],
+      columns: [
+        { key: 'id', label: 'ID', width: '60px' },
+        { key: 'name', label: 'Name' },
+        { key: 'address', label: 'Address' },
+        { key: 'capacity', label: 'Capacity' },
+        { key: 'surface_type', label: 'Surface' },
+      ],
+    },
+    {
+      key: 'seasons', label: 'Seasons', singular: 'Season', icon: '📅',
+      fields: [
+        { name: 'name', label: 'Season Name', type: 'text', required: true, minLength: 2, duplicateCheck: true },
+        { name: 'start_date', label: 'Start Date', type: 'date', required: true },
+        { name: 'end_date', label: 'End Date', type: 'date', required: true },
+        { name: 'year', label: 'Year', type: 'number', required: true, min: 2000, max: 2100 },
+        { name: 'status', label: 'Status', type: 'select', required: true, options: [
+          { value: 'Upcoming', label: 'Upcoming' },
+          { value: 'Active', label: 'Active' },
+          { value: 'Completed', label: 'Completed' },
+          { value: 'Cancelled', label: 'Cancelled' },
+        ]},
+      ],
+      columns: [
+        { key: 'id', label: 'ID', width: '60px' },
+        { key: 'name', label: 'Name' },
+        { key: 'start_date', label: 'Start' },
+        { key: 'end_date', label: 'End' },
+        { key: 'year', label: 'Year' },
+        { key: 'status', label: 'Status' },
+      ],
+    },
+    {
+      key: 'schedules', label: 'Schedules', singular: 'Schedule', icon: '🗓️',
+      fields: [
+        { name: 'match_date', label: 'Match Date', type: 'date', required: true },
+        { name: 'home_team_id', label: 'Home Team', type: 'select', required: true, options: optsFromTable(db.teams) },
+        { name: 'away_team_id', label: 'Away Team', type: 'select', required: true, options: optsFromTable(db.teams) },
+        { name: 'venue_id', label: 'Venue', type: 'select', required: true, options: optsFromTable(db.venues) },
+        { name: 'season_id', label: 'Season', type: 'select', required: true, options: optsFromTable(db.seasons) },
+      ],
+      columns: [
+        { key: 'id', label: 'ID', width: '60px' },
+        { key: 'match_date', label: 'Date' },
+        { key: 'home_team_id', label: 'Home' },
+        { key: 'away_team_id', label: 'Away' },
+        { key: 'venue_id', label: 'Venue' },
+        { key: 'season_id', label: 'Season' },
+      ],
+    },
+    {
+      key: 'matches', label: 'Matches', singular: 'Match', icon: '🏆',
+      fields: [
+        { name: 'schedule_id', label: 'Schedule', type: 'select', required: true, options: optsFromTable(db.schedules) },
+        { name: 'home_team_id', label: 'Home Team', type: 'select', required: true, options: optsFromTable(db.teams) },
+        { name: 'away_team_id', label: 'Away Team', type: 'select', required: true, options: optsFromTable(db.teams) },
+        { name: 'match_date', label: 'Match Date', type: 'date', required: true },
+        { name: 'status', label: 'Status', type: 'select', required: true, options: [
+          { value: 'Scheduled', label: 'Scheduled' },
+          { value: 'Live', label: 'Live' },
+          { value: 'Completed', label: 'Completed' },
+          { value: 'Postponed', label: 'Postponed' },
+          { value: 'Cancelled', label: 'Cancelled' },
+        ]},
+        { name: 'attendance', label: 'Attendance', type: 'number', required: true, min: 0, max: 200000 },
+      ],
+      columns: [
+        { key: 'id', label: 'ID', width: '60px' },
+        { key: 'match_date', label: 'Date' },
+        { key: 'home_team_id', label: 'Home' },
+        { key: 'away_team_id', label: 'Away' },
+        { key: 'status', label: 'Status' },
+        { key: 'attendance', label: 'Att.' },
+      ],
+    },
+    {
+      key: 'scores', label: 'Scores', singular: 'Score', icon: '🔢',
+      fields: [
+        { name: 'match_id', label: 'Match', type: 'select', required: true, options: optsFromTable(db.matches) },
+        { name: 'team_id', label: 'Team', type: 'select', required: true, options: optsFromTable(db.teams) },
+        { name: 'quarter', label: 'Quarter/Half', type: 'number', required: true, min: 1, max: 10 },
+        { name: 'points', label: 'Points', type: 'number', required: true, min: 0, max: 50 },
+      ],
+      columns: [
+        { key: 'id', label: 'ID', width: '60px' },
+        { key: 'match_id', label: 'Match' },
+        { key: 'team_id', label: 'Team' },
+        { key: 'quarter', label: 'Qtr' },
+        { key: 'points', label: 'Pts' },
+      ],
+    },
+    {
+      key: 'gamelogs', label: 'Game Logs', singular: 'Game Log', icon: '📝',
+      fields: [
+        { name: 'match_id', label: 'Match', type: 'select', required: true, options: optsFromTable(db.matches) },
+        { name: 'player_id', label: 'Player', type: 'select', required: true, options: optsFromTable(db.players) },
+        { name: 'event_type', label: 'Event Type', type: 'select', required: true, options: [
+          { value: 'Goal', label: 'Goal' },
+          { value: 'Assist', label: 'Assist' },
+          { value: 'Yellow Card', label: 'Yellow Card' },
+          { value: 'Red Card', label: 'Red Card' },
+          { value: 'Substitution', label: 'Substitution' },
+          { value: 'Injury', label: 'Injury' },
+        ]},
+        { name: 'minute', label: 'Minute', type: 'number', required: true, min: 0, max: 120 },
+        { name: 'description', label: 'Description', type: 'textarea', required: true },
+      ],
+      columns: [
+        { key: 'id', label: 'ID', width: '60px' },
+        { key: 'match_id', label: 'Match' },
+        { key: 'player_id', label: 'Player' },
+        { key: 'event_type', label: 'Event' },
+        { key: 'minute', label: "'" },
+        { key: 'description', label: 'Description' },
+      ],
+    },
+    {
+      key: 'standings', label: 'Standings', singular: 'Standing', icon: '📊',
+      fields: [
+        { name: 'team_id', label: 'Team', type: 'select', required: true, options: optsFromTable(db.teams) },
+        { name: 'season_id', label: 'Season', type: 'select', required: true, options: optsFromTable(db.seasons) },
+        { name: 'played', label: 'Played', type: 'number', required: true, min: 0, max: 100 },
+        { name: 'wins', label: 'Wins', type: 'number', required: true, min: 0, max: 100 },
+        { name: 'losses', label: 'Losses', type: 'number', required: true, min: 0, max: 100 },
+        { name: 'draws', label: 'Draws', type: 'number', required: true, min: 0, max: 100 },
+        { name: 'points', label: 'Points', type: 'number', required: true, min: 0, max: 300 },
+      ],
+      columns: [
+        { key: 'id', label: 'ID', width: '60px' },
+        { key: 'team_id', label: 'Team' },
+        { key: 'season_id', label: 'Season' },
+        { key: 'played', label: 'P' },
+        { key: 'wins', label: 'W' },
+        { key: 'losses', label: 'L' },
+        { key: 'draws', label: 'D' },
+        { key: 'points', label: 'Pts' },
+      ],
+    },
+    {
+      key: 'statistics', label: 'Statistics', singular: 'Statistic', icon: '📈',
+      fields: [
+        { name: 'player_id', label: 'Player', type: 'select', required: true, options: optsFromTable(db.players) },
+        { name: 'season_id', label: 'Season', type: 'select', required: true, options: optsFromTable(db.seasons) },
+        { name: 'goals', label: 'Goals', type: 'number', required: true, min: 0, max: 100 },
+        { name: 'assists', label: 'Assists', type: 'number', required: true, min: 0, max: 100 },
+        { name: 'yellow_cards', label: 'Yellow Cards', type: 'number', required: true, min: 0, max: 50 },
+        { name: 'red_cards', label: 'Red Cards', type: 'number', required: true, min: 0, max: 20 },
+        { name: 'minutes_played', label: 'Minutes Played', type: 'number', required: true, min: 0, max: 5000 },
+      ],
+      columns: [
+        { key: 'id', label: 'ID', width: '60px' },
+        { key: 'player_id', label: 'Player' },
+        { key: 'season_id', label: 'Season' },
+        { key: 'goals', label: 'G' },
+        { key: 'assists', label: 'A' },
+        { key: 'yellow_cards', label: '🟨' },
+        { key: 'red_cards', label: '🟥' },
+        { key: 'minutes_played', label: 'Min' },
+      ],
+    },
+    {
+      key: 'playerprofiles', label: 'Player Profiles', singular: 'Profile', icon: '👤',
+      fields: [
+        { name: 'player_id', label: 'Player', type: 'select', required: true, options: optsFromTable(db.players) },
+        { name: 'height_cm', label: 'Height (cm)', type: 'number', required: true, min: 120, max: 230 },
+        { name: 'weight_kg', label: 'Weight (kg)', type: 'number', required: true, min: 40, max: 150 },
+        { name: 'nationality', label: 'Nationality', type: 'text', required: true },
+        { name: 'preferred_foot', label: 'Preferred Foot', type: 'select', required: true, options: [
+          { value: 'Right', label: 'Right' },
+          { value: 'Left', label: 'Left' },
+          { value: 'Both', label: 'Both' },
+        ]},
+        { name: 'bio', label: 'Biography', type: 'textarea' },
+      ],
+      columns: [
+        { key: 'id', label: 'ID', width: '60px' },
+        { key: 'player_id', label: 'Player' },
+        { key: 'height_cm', label: 'Ht(cm)' },
+        { key: 'weight_kg', label: 'Wt(kg)' },
+        { key: 'nationality', label: 'Nation' },
+        { key: 'preferred_foot', label: 'Foot' },
+      ],
+    },
+    {
+      key: 'injuries', label: 'Injuries', singular: 'Injury', icon: '🩹',
+      fields: [
+        { name: 'player_id', label: 'Player', type: 'select', required: true, options: optsFromTable(db.players) },
+        { name: 'injury_type', label: 'Injury Type', type: 'text', required: true },
+        { name: 'severity', label: 'Severity', type: 'select', required: true, options: [
+          { value: 'Mild', label: 'Mild' },
+          { value: 'Moderate', label: 'Moderate' },
+          { value: 'Severe', label: 'Severe' },
+          { value: 'Career-threatening', label: 'Career-threatening' },
+        ]},
+        { name: 'start_date', label: 'Start Date', type: 'date', required: true },
+        { name: 'expected_return', label: 'Expected Return', type: 'date', required: true },
+      ],
+      columns: [
+        { key: 'id', label: 'ID', width: '60px' },
+        { key: 'player_id', label: 'Player' },
+        { key: 'injury_type', label: 'Type' },
+        { key: 'severity', label: 'Severity' },
+        { key: 'start_date', label: 'From' },
+        { key: 'expected_return', label: 'Return' },
+      ],
+    },
+    {
+      key: 'awards', label: 'Awards', singular: 'Award', icon: '🏅',
+      fields: [
+        { name: 'name', label: 'Award Name', type: 'text', required: true, minLength: 2 },
+        { name: 'player_id', label: 'Player', type: 'select', required: true, options: optsFromTable(db.players) },
+        { name: 'season_id', label: 'Season', type: 'select', required: true, options: optsFromTable(db.seasons) },
+        { name: 'category', label: 'Category', type: 'text', required: true },
+        { name: 'date_awarded', label: 'Date Awarded', type: 'date', required: true },
+      ],
+      columns: [
+        { key: 'id', label: 'ID', width: '60px' },
+        { key: 'name', label: 'Award' },
+        { key: 'player_id', label: 'Player' },
+        { key: 'season_id', label: 'Season' },
+        { key: 'category', label: 'Category' },
+        { key: 'date_awarded', label: 'Date' },
+      ],
+    },
+    {
+      key: 'equipment', label: 'Equipment', singular: 'Equipment', icon: '🎽',
+      fields: [
+        { name: 'team_id', label: 'Team', type: 'select', required: true, options: optsFromTable(db.teams) },
+        { name: 'item_name', label: 'Item Name', type: 'text', required: true, minLength: 2 },
+        { name: 'quantity', label: 'Quantity', type: 'number', required: true, min: 1, max: 10000 },
+        { name: 'condition_status', label: 'Condition', type: 'select', required: true, options: [
+          { value: 'New', label: 'New' },
+          { value: 'Good', label: 'Good' },
+          { value: 'Fair', label: 'Fair' },
+          { value: 'Needs Replacement', label: 'Needs Replacement' },
+        ]},
+        { name: 'purchase_date', label: 'Purchase Date', type: 'date', required: true },
+      ],
+      columns: [
+        { key: 'id', label: 'ID', width: '60px' },
+        { key: 'team_id', label: 'Team' },
+        { key: 'item_name', label: 'Item' },
+        { key: 'quantity', label: 'Qty' },
+        { key: 'condition_status', label: 'Cond.' },
+        { key: 'purchase_date', label: 'Purchased' },
+      ],
+    },
+    {
+      key: 'sponsors', label: 'Sponsors', singular: 'Sponsor', icon: '💼',
+      fields: [
+        { name: 'name', label: 'Sponsor Name', type: 'text', required: true, minLength: 2, duplicateCheck: true },
+        { name: 'contact_email', label: 'Contact Email', type: 'text', required: true, email: true },
+        { name: 'contract_start', label: 'Contract Start', type: 'date', required: true },
+        { name: 'contract_end', label: 'Contract End', type: 'date', required: true },
+        { name: 'amount', label: 'Amount ($)', type: 'number', required: true, min: 0, max: 100000000 },
+      ],
+      columns: [
+        { key: 'id', label: 'ID', width: '60px' },
+        { key: 'name', label: 'Name' },
+        { key: 'contact_email', label: 'Email' },
+        { key: 'contract_start', label: 'Start' },
+        { key: 'contract_end', label: 'End' },
+        { key: 'amount', label: 'Amount' },
+      ],
+    },
+    {
+      key: 'posters', label: 'Posters', singular: 'Poster', icon: '🖼️',
+      fields: [
+        { name: 'match_id', label: 'Match', type: 'select', required: true, options: optsFromTable(db.matches) },
+        { name: 'title', label: 'Title', type: 'text', required: true, minLength: 2 },
+        { name: 'image_url', label: 'Image URL', type: 'text' },
+        { name: 'publish_date', label: 'Publish Date', type: 'date', required: true },
+        { name: 'description', label: 'Description', type: 'textarea' },
+      ],
+      columns: [
+        { key: 'id', label: 'ID', width: '60px' },
+        { key: 'match_id', label: 'Match' },
+        { key: 'title', label: 'Title' },
+        { key: 'publish_date', label: 'Published' },
+        { key: 'description', label: 'Description' },
+      ],
+    },
+    {
+      key: 'tickets', label: 'Tickets', singular: 'Ticket', icon: '🎫',
+      fields: [
+        { name: 'match_id', label: 'Match', type: 'select', required: true, options: optsFromTable(db.matches) },
+        { name: 'ticket_type', label: 'Ticket Type', type: 'select', required: true, options: [
+          { value: 'General Admission', label: 'General Admission' },
+          { value: 'Premium', label: 'Premium' },
+          { value: 'VIP', label: 'VIP' },
+          { value: 'Suite', label: 'Suite' },
+        ]},
+        { name: 'price', label: 'Price ($)', type: 'number', required: true, min: 0, max: 10000 },
+        { name: 'quantity_available', label: 'Qty Available', type: 'number', required: true, min: 1, max: 200000 },
+        { name: 'quantity_sold', label: 'Qty Sold', type: 'number', required: true, min: 0, max: 200000 },
+        { name: 'sale_start', label: 'Sale Start', type: 'date', required: true },
+        { name: 'sale_end', label: 'Sale End', type: 'date', required: true },
+      ],
+      columns: [
+        { key: 'id', label: 'ID', width: '60px' },
+        { key: 'match_id', label: 'Match' },
+        { key: 'ticket_type', label: 'Type' },
+        { key: 'price', label: 'Price' },
+        { key: 'quantity_available', label: 'Avail.' },
+        { key: 'quantity_sold', label: 'Sold' },
+      ],
+    },
+    {
+      key: 'fanregistration', label: 'Fan Registration', singular: 'Fan', icon: '🎉',
+      fields: [
+        { name: 'name', label: 'Name', type: 'text', required: true, lettersOnly: true, minLength: 2 },
+        { name: 'email', label: 'Email', type: 'text', required: true, email: true },
+        { name: 'favorite_team_id', label: 'Favorite Team', type: 'select', required: true, options: optsFromTable(db.teams) },
+        { name: 'registered_date', label: 'Registration Date', type: 'date', required: true },
+        { name: 'phone', label: 'Phone', type: 'text', required: true },
+      ],
+      columns: [
+        { key: 'id', label: 'ID', width: '60px' },
+        { key: 'name', label: 'Name' },
+        { key: 'email', label: 'Email' },
+        { key: 'favorite_team_id', label: 'Fav. Team' },
+        { key: 'registered_date', label: 'Reg. Date' },
+        { key: 'phone', label: 'Phone' },
+      ],
+    },
+    {
+      key: 'references', label: 'References', singular: 'Reference', icon: '🔗',
+      fields: [
+        { name: 'table_name', label: 'Table Name', type: 'text', required: true, minLength: 2 },
+        { name: 'record_id', label: 'Record ID', type: 'number', required: true, min: 1 },
+        { name: 'note', label: 'Note', type: 'textarea', required: true },
+        { name: 'created_at', label: 'Created At', type: 'date', required: true },
+      ],
+      columns: [
+        { key: 'id', label: 'ID', width: '60px' },
+        { key: 'table_name', label: 'Table' },
+        { key: 'record_id', label: 'Rec ID' },
+        { key: 'note', label: 'Note' },
+        { key: 'created_at', label: 'Created' },
+      ],
+    },
+  ];
+}
+
+// Map table key -> display label for FK lookups in the table
+export function resolveFK(tableKey: string, id: number, db: any): string {
+  if (id === undefined || id === null) return '';
+  switch (tableKey) {
+    case 'coach_id': {
+      const r = db.coaches.find((c: any) => c.id === id);
+      return r ? r.name : String(id);
+    }
+    case 'team_id': case 'home_team_id': case 'away_team_id': case 'favorite_team_id': {
+      const r = db.teams.find((t: any) => t.id === id);
+      return r ? r.name : String(id);
+    }
+    case 'player_id': {
+      const r = db.players.find((p: any) => p.id === id);
+      return r ? r.name : String(id);
+    }
+    case 'venue_id': {
+      const r = db.venues.find((v: any) => v.id === id);
+      return r ? r.name : String(id);
+    }
+    case 'season_id': {
+      const r = db.seasons.find((s: any) => s.id === id);
+      return r ? r.name : String(id);
+    }
+    case 'match_id': {
+      const r = db.matches.find((m: any) => m.id === id);
+      if (r) {
+        const h = db.teams.find((t: any) => t.id === r.home_team_id);
+        const a = db.teams.find((t: any) => t.id === r.away_team_id);
+        return h && a ? `${h.name} vs ${a.name}` : String(id);
+      }
+      return String(id);
+    }
+    case 'schedule_id': {
+      const r = db.schedules.find((s: any) => s.id === id);
+      return r ? `#${r.id} — ${r.match_date}` : String(id);
+    }
+    default: return String(id);
+  }
+}

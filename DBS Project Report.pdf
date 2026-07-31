@@ -1,0 +1,62 @@
+# Sports League Management System — JSON / localStorage Version
+
+A client-side, single-page CRUD application for managing a much larger sports-league data model (20 entity modules), built with React + TypeScript, persisting entirely to the browser's `localStorage` — no backend or real database. Built as a semester project for **CS-304 Database Systems**.
+
+**Team:**
+- Yasir Hameed (24-CyS-002)
+- Muhammad Anish (24-CyS-014)
+- Muhammad Taha (24-CyS-068)
+
+## Features
+
+- Full CRUD (Create / Read / Update / Delete) across **20 modules**: Coaches, Teams, Players, Venues, Seasons, Schedules, Matches, Scores, Game Logs, Standings, Statistics, Player Profiles, Injuries, Awards, Equipment, Sponsors, Posters, Tickets, Fan Registration, and References (audit log)
+- Dashboard with total record count and module count across the whole dataset
+- Foreign-key–style relationships resolved at render time (e.g. a match's team/venue/season IDs are displayed as names, not raw IDs), with dropdown selects populated from related tables
+- Per-field validation: required fields, min/max length, numeric ranges, email format, letters-only names, duplicate checks
+- Global search across the currently open module (matches raw values and resolved foreign-key values)
+- Toast notifications for create/update/delete feedback
+- Data persists across page reloads via `localStorage` (key: `sports_league_db_v2`); a reset action is available to restore seed data
+
+## Tech stack
+
+- **React** 19 + **TypeScript**
+- **Vite** (build tool, with `vite-plugin-singlefile` for single-file builds)
+- **Tailwind CSS** 4
+- `clsx` + `tailwind-merge` for conditional class handling
+- No backend — all data lives in `localStorage` as JSON
+
+## Setup / Run
+
+```bash
+npm install
+npm run dev        # start local dev server
+npm run build       # production build
+npm run preview     # preview the production build
+```
+
+Requires Node.js (any recent LTS version). No database or server setup needed — just open the app in a browser.
+
+## Files
+
+```
+json-localstorage-version/
+├── index.html
+├── package.json
+├── tsconfig.json
+├── vite.config.ts
+├── docs/
+│   ├── Peoject Proposal__DBs(A).pdf     # Initial project proposal
+│   └── DBS Project Report.pdf           # Final report
+└── src/
+    ├── main.tsx           # App entry point
+    ├── App.tsx            # Main app shell — routing, search, modal state
+    ├── components.tsx     # Reusable CRUDTable, FormModal, ToastContainer
+    ├── schema.tsx          # Definitions for all 20 modules (fields, columns, FK lookups)
+    ├── store.ts            # localStorage persistence layer + validation logic
+    ├── index.css           # Global styles (Tailwind entry)
+    └── utils/cn.ts         # Classname merge helper
+```
+
+## Note
+
+`node_modules/` and `package-lock.json` build artifacts are excluded via `.gitignore` — after cloning, run `npm install` to regenerate dependencies.
