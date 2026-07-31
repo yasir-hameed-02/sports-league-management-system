@@ -1,0 +1,20 @@
+# --- JSON/localStorage version (Node/Vite) ---
+json-localstorage-version/node_modules/
+json-localstorage-version/dist/
+json-localstorage-version/package-lock.json
+json-localstorage-version/.vite/
+json-localstorage-version/*.local
+
+# --- PHP/MySQL version ---
+# Large demo recording (exceeds GitHub's 100MB file limit) — link externally instead
+php-mysql-version/*.mp4
+php-mysql-version/**/*.mp4
+
+# --- General ---
+.DS_Store
+Thumbs.db
+*.log
+.env
+.env.local
+.vscode/
+.idea/
