@@ -8,8 +8,8 @@ This repository contains both implementations as separate subfolders.
 
 | | [`php-mysql-version/`](./php-mysql-version) | [`json-localstorage-version/`](./json-localstorage-version) |
 |---|---|---|
-| **Type** | CCP (individual) | Semester project (team) |
-| **Author(s)** | Yasir Hameed (24-CyS-002) | Yasir Hameed (24-CyS-002), Muhammad Anish (24-CyS-014), Muhammad Taha (24-CyS-068) |
+| **Type** | CCP (individual) | Semester project |
+| **Author(s)** | Yasir Hameed (24-CyS-002) | Yasir Hameed (24-CyS-002) |
 | **Backend** | PHP (mysqli) | None — pure client-side |
 | **Data storage** | MySQL (relational, normalized to 3NF) | Browser `localStorage` (JSON documents) |
 | **Frontend** | Plain PHP + inline CSS (dark glassmorphism theme) | React 19 + TypeScript + Tailwind CSS 4 |
